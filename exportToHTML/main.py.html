@@ -1,0 +1,123 @@
+<html>
+<head>
+<title>main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ebebeb;}
+.s1 { color: #7ec3e6;}
+.s2 { color: #ed864a;}
+.s3 { color: #ed864a; font-weight: bold;}
+.s4 { color: #33ccff; font-weight: bold;}
+.s5 { color: #54b33e;}
+</style>
+</head>
+<body bgcolor="#131314">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.py</font>
+</center></td></tr></table>
+<pre>
+<span class="s1"># import pygame</span>
+
+<span class="s2">import </span><span class="s0">random</span>
+<span class="s2">import </span><span class="s0">pygame</span>
+<span class="s2">import </span><span class="s0">cv2</span>
+<span class="s2">import </span><span class="s0">numpy </span><span class="s2">as </span><span class="s0">np</span>
+<span class="s2">from </span><span class="s0">cvzone.HandTrackingModule </span><span class="s2">import </span><span class="s0">HandDetector</span>
+<span class="s2">import </span><span class="s0">time</span>
+
+<span class="s1"># Initialize</span>
+<span class="s0">pygame.init()</span>
+
+<span class="s1"># Create Window</span>
+<span class="s0">width</span><span class="s3">, </span><span class="s0">height = </span><span class="s4">1280</span><span class="s3">, </span><span class="s4">720</span>
+<span class="s0">window = pygame.display.set_mode((width</span><span class="s3">, </span><span class="s0">height))</span>
+<span class="s0">pygame.display.set_caption(</span><span class="s5">&quot;Balloon Pop Game&quot;</span><span class="s0">)</span>
+
+<span class="s1"># Initialize Clock for FPSf</span>
+<span class="s0">fps = </span><span class="s4">30</span>
+<span class="s0">clock = pygame.time.Clock()</span>
+
+<span class="s1"># WebCam</span>
+<span class="s0">cap = cv2.VideoCapture(</span><span class="s4">0</span><span class="s0">)</span>
+<span class="s0">cap.set(</span><span class="s4">3</span><span class="s3">, </span><span class="s4">1280</span><span class="s0">) </span><span class="s1">#width</span>
+<span class="s0">cap.set(</span><span class="s4">4</span><span class="s3">, </span><span class="s4">720</span><span class="s0">) </span><span class="s1">#height</span>
+
+<span class="s1"># Images</span>
+<span class="s0">imgBalloon = pygame.image.load(</span><span class="s5">'Resources/Images/balloon_image.png'</span><span class="s0">).convert_alpha()</span>
+<span class="s0">imgBalloon = pygame.transform.smoothscale(imgBalloon</span><span class="s3">, </span><span class="s0">(</span><span class="s4">150</span><span class="s3">, </span><span class="s4">150</span><span class="s0">))</span>
+<span class="s0">rectBalloon = imgBalloon.get_rect()</span>
+<span class="s0">rectBalloon.x</span><span class="s3">, </span><span class="s0">rectBalloon.y = </span><span class="s4">500</span><span class="s3">, </span><span class="s4">500</span>
+
+<span class="s1"># Variable</span>
+<span class="s0">speed = </span><span class="s4">15</span>
+<span class="s0">score = </span><span class="s4">0</span>
+<span class="s0">startTime = time.time()</span>
+<span class="s0">totalTime = </span><span class="s4">7</span>
+
+<span class="s1"># Detector</span>
+<span class="s0">detector = HandDetector(detectionCon=</span><span class="s4">0.8</span><span class="s3">, </span><span class="s0">maxHands=</span><span class="s4">1</span><span class="s0">)</span>
+
+<span class="s2">def </span><span class="s0">resetBalloon():</span>
+    <span class="s0">rectBalloon.x = random.randint(</span><span class="s4">100</span><span class="s3">, </span><span class="s0">img.shape[</span><span class="s4">1</span><span class="s0">] - </span><span class="s4">100</span><span class="s0">)</span>
+    <span class="s0">rectBalloon.y = img.shape[</span><span class="s4">0</span><span class="s0">]+</span><span class="s4">40</span>
+
+<span class="s1"># Main Loops</span>
+<span class="s0">start = </span><span class="s2">True</span>
+<span class="s2">while </span><span class="s0">start:</span>
+    <span class="s2">for </span><span class="s0">event </span><span class="s2">in </span><span class="s0">pygame.event.get():</span>
+        <span class="s2">if </span><span class="s0">event.type == pygame.QUIT:</span>
+            <span class="s0">start = </span><span class="s2">False</span>
+            <span class="s0">pygame.quit()</span>
+
+
+    <span class="s1"># Logic</span>
+    <span class="s0">remainingTime = int(totalTime - (time.time()-startTime))</span>
+    <span class="s2">if </span><span class="s0">remainingTime &lt; </span><span class="s4">0</span><span class="s0">:</span>
+        <span class="s0">window.fill((</span><span class="s4">255</span><span class="s3">, </span><span class="s4">255</span><span class="s3">, </span><span class="s4">255</span><span class="s0">))</span>
+
+        <span class="s0">font = pygame.font.Font(</span><span class="s5">'Resources/Font/BebasNeue-Regular.ttf'</span><span class="s3">, </span><span class="s4">50</span><span class="s0">)</span>
+        <span class="s0">textScore = font.render(</span><span class="s5">f'Your Score: </span><span class="s2">{</span><span class="s0">score</span><span class="s2">}</span><span class="s5">'</span><span class="s3">, </span><span class="s2">True</span><span class="s3">, </span><span class="s0">(</span><span class="s4">50</span><span class="s3">, </span><span class="s4">50</span><span class="s3">, </span><span class="s4">255</span><span class="s0">))</span>
+        <span class="s0">textTime = font.render(</span><span class="s5">f'Time Up'</span><span class="s3">, </span><span class="s2">True</span><span class="s3">, </span><span class="s0">(</span><span class="s4">50</span><span class="s3">, </span><span class="s4">50</span><span class="s3">, </span><span class="s4">255</span><span class="s0">))</span>
+        <span class="s0">window.blit(textScore</span><span class="s3">, </span><span class="s0">(</span><span class="s4">450</span><span class="s3">, </span><span class="s4">350</span><span class="s0">))</span>
+        <span class="s0">window.blit(textTime</span><span class="s3">, </span><span class="s0">(</span><span class="s4">530</span><span class="s3">, </span><span class="s4">275</span><span class="s0">))</span>
+    <span class="s2">else</span><span class="s0">:</span>
+        <span class="s1"># OpenCV</span>
+        <span class="s0">success</span><span class="s3">, </span><span class="s0">img = cap.read()</span>
+        <span class="s0">img = cv2.flip(img</span><span class="s3">, </span><span class="s4">1</span><span class="s0">)</span>
+        <span class="s0">hands</span><span class="s3">, </span><span class="s0">img = detector.findHands(img</span><span class="s3">, </span><span class="s0">flipType=</span><span class="s2">False</span><span class="s0">)</span>
+        <span class="s0">rectBalloon.y -= speed</span>
+        <span class="s2">if </span><span class="s0">rectBalloon.y &lt; </span><span class="s4">0</span><span class="s0">:</span>
+            <span class="s0">resetBalloon()</span>
+            <span class="s0">speed += </span><span class="s4">1</span>
+
+        <span class="s2">if </span><span class="s0">hands:</span>
+            <span class="s0">hand = hands[</span><span class="s4">0</span><span class="s0">]</span>
+            <span class="s0">lmList = hand[</span><span class="s5">'lmList'</span><span class="s0">][</span><span class="s4">8</span><span class="s0">]</span>
+            <span class="s0">x</span><span class="s3">, </span><span class="s0">y = lmList[:</span><span class="s4">2</span><span class="s0">]</span>
+            <span class="s2">if </span><span class="s0">rectBalloon.collidepoint(x</span><span class="s3">, </span><span class="s0">y):</span>
+                <span class="s0">resetBalloon()</span>
+                <span class="s0">score += </span><span class="s4">10</span>
+                <span class="s0">speed += </span><span class="s4">1</span>
+
+        <span class="s0">imgRGB = cv2.cvtColor(img</span><span class="s3">, </span><span class="s0">cv2.COLOR_RGB2BGR)</span>
+        <span class="s0">imgRGB = np.rot90(imgRGB)</span>
+        <span class="s0">frame = pygame.surfarray.make_surface(imgRGB).convert()</span>
+        <span class="s0">frame = pygame.transform.flip(frame</span><span class="s3">, </span><span class="s2">True</span><span class="s3">, </span><span class="s2">False</span><span class="s0">)</span>
+        <span class="s0">window.blit(frame</span><span class="s3">, </span><span class="s0">(</span><span class="s4">0</span><span class="s3">, </span><span class="s4">0</span><span class="s0">))</span>
+        <span class="s0">window.blit(imgBalloon</span><span class="s3">, </span><span class="s0">rectBalloon)</span>
+        <span class="s0">font = pygame.font.Font(</span><span class="s5">'Resources/Font/BebasNeue-Regular.ttf'</span><span class="s3">, </span><span class="s4">50</span><span class="s0">)</span>
+        <span class="s0">textScore = font.render(</span><span class="s5">f'Score: </span><span class="s2">{</span><span class="s0">score</span><span class="s2">}</span><span class="s5">'</span><span class="s3">, </span><span class="s2">True</span><span class="s3">, </span><span class="s0">(</span><span class="s4">50</span><span class="s3">, </span><span class="s4">50</span><span class="s3">, </span><span class="s4">255</span><span class="s0">))</span>
+        <span class="s0">textTime = font.render(</span><span class="s5">f'Time: </span><span class="s2">{</span><span class="s0">remainingTime</span><span class="s2">}</span><span class="s5">'</span><span class="s3">, </span><span class="s2">True</span><span class="s3">, </span><span class="s0">(</span><span class="s4">50</span><span class="s3">, </span><span class="s4">50</span><span class="s3">, </span><span class="s4">255</span><span class="s0">))</span>
+        <span class="s0">window.blit(textScore</span><span class="s3">, </span><span class="s0">(</span><span class="s4">35</span><span class="s3">, </span><span class="s4">35</span><span class="s0">))</span>
+        <span class="s0">window.blit(textTime</span><span class="s3">, </span><span class="s0">(</span><span class="s4">1100</span><span class="s3">, </span><span class="s4">35</span><span class="s0">))</span>
+
+
+    <span class="s1"># Update Display/Window</span>
+    <span class="s0">pygame.display.update()</span>
+
+    <span class="s1"># Set FPS</span>
+    <span class="s0">clock.tick(fps)</span></pre>
+</body>
+</html>
